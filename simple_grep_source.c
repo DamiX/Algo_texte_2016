@@ -5,20 +5,19 @@
 #include <unistd.h>
 #include "lib/algo.h"
 
-#define true 1
-#define false 0
-#define _DEBUG
+const int sz_buffer = 6000;
 
-typedef int bool;
+inline void print_usage(const char* appName) {
+	printf("Usage: %s [options] motif fichier\n\nOptions:\n\t-n\tAffiche le nombre d'occurrence du motif\n\t-l\tAffiche le numéro de ligne des occurrences\n\t-i\tInsensible à la case\n", appName);
+}
 
-const int sz_buffer = 1024;
+inline int without_tolower(FILE* f) {
+	return fgetc(f);
+}
 
-inline void print_usage(const char*);
-
-// Charset checking
-inline bool valid_caractere(const char);
-inline void strtolower(char*);
-char* normalize_string(char*);
+inline int with_tolower(FILE* f) {
+	return tolower(fgetc(f));
+}
 
 int main(int argc, char** argv)
 {
@@ -29,16 +28,19 @@ int main(int argc, char** argv)
 
 	bool nFlag = false;
 	bool lFlag = false;
+	bool iFlag = false;
 	char* motif = argv[argc-2];
 	const char* fichier = argv[argc-1];
+	const char* ansi_red_color = "\x1b[1;32m";
+	const char* ansi_reset_color = "\x1b[0m";
 
 	// Normalise l'entrée
-	strtolower(motif);
 	motif = normalize_string(motif);
+	int sz_motif = (int)strlen(motif);
 
 	// Prise en charge des options
 	int o;
-	while((o = getopt(argc, argv, "nl")) != -1)
+	while((o = getopt(argc, argv, "nli")) != -1)
 	{
 		switch(o)
 		{
@@ -50,6 +52,10 @@ int main(int argc, char** argv)
 				lFlag = true;
 			break;
 
+			case 'i':
+				iFlag = true;
+			break;
+
 			case '?':
 				print_usage(argv[0]);
 				return 1;
@@ -58,6 +64,15 @@ int main(int argc, char** argv)
 			default:
 				exit(1);
 		}
+	}
+
+	//Case-sensitive ?
+	int (*ptr_f)(FILE*);
+	if(iFlag) {
+		ptr_f = with_tolower;
+		strtolower(motif);
+	} else {
+		ptr_f = without_tolower;
 	}
 
 	//Creons l'automate
@@ -76,34 +91,40 @@ int main(int argc, char** argv)
 
 	int occ = 0, tmpocc = 0, i = 0, line = 1;
 
-	//for(i = 0; i < 26; ++i)
-	//	printf("i: %d\t v: %d\n", i, sgrepAutomata->map_alphabet[i]);
-
-	while((c = tolower(fgetc(txt))) != EOF)
+	while((c = (*ptr_f)(txt)) != EOF)
 	{
-		//printf("%c", c);
-		if(c == '\n') {
-			line++;
-			i = 0;
+		buffer[i%sz_buffer] = c; //Avoid overflow
+		i = i + 1;
 
+		if(!is_valid_caractere((int)c))
+			continue;
+
+		if(c == '\n') {
 			if(occ > tmpocc) {
+
 				if(lFlag)
-					printf("l.%d - ", line-1);
+					printf("\x1b[1;36ml.%d\x1b[0m - ", line);
+
+				buffer[i-1] = '\0';				
 				printf("%s\n", buffer);
 				tmpocc++;
 			}
-				
+			
+			i = 0;
+			line = line + 1;
 			memset(buffer, 0, sz_buffer);
-		} else {
-			buffer[i++] = c;
 		}
 
-		if(!valid_caractere(c))
-			continue;
-
 		read_letter(sgrepAutomata, c);
-		if(is_final(sgrepAutomata))
+		if(est_final(sgrepAutomata)) {
+			// Fancy color !
+			buffer[i-sz_motif] = '\0';
+			strcat(buffer, ansi_red_color);
+			strcat(buffer, motif);
+			strcat(buffer, ansi_reset_color);
+			i += 11;
 			occ = occ + 1;
+		}
 
 	}
 
@@ -115,37 +136,4 @@ int main(int argc, char** argv)
 	free(motif);
 
 	return 0;
-}
-
-inline void print_usage(const char* appName) {
-	printf("Usage: %s [options] motif fichier\n\nOptions:\n\t-n\tAffiche le nombre d'occurrence du motif\n\t-l\tAffiche le numéro de ligne des occurrences\n", appName);
-}
-
-inline bool valid_caractere(const char c) {
-	return (c >= 'a' && c <= 'z' || c >= '0' && c <= '9') ? true : false;
-}
-
-inline void strtolower(char* str) {
-	while((*str = tolower(*str)) != 0){++str;}
-}
-
-char* normalize_string(char* myString)
-{
-	int i, j = 0;
-	int sz = (int)strlen(myString);
-	
-	char* buffer = malloc(sizeof(char) * sz+1);
-	if(buffer == NULL) {
-		fprintf(stderr, "Impossible d'allouer de la mémoire");
-		exit(-1);
-	}
-
-	for(i = 0; i < sz; ++i) {
-		if(valid_caractere(myString[i]))
-			buffer[j++] = myString[i];
-	}
-	buffer[j] = '\0';
-
-	return buffer;
-}
-			
+}		
