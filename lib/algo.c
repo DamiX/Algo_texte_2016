@@ -77,9 +77,9 @@ automate_det* automate_localisation(const char* mot)
 		print_error("Unable to allocate memory for the automata");
 
 	Du->qInit = 0;
-	Du->nbEtats = sz+1;
-	Du->nbEtatsFinals = 1;
-	Du->curseur = 0; //qInit
+	Du->nStates = sz+1;
+	Du->nFinalStates = 1;
+	Du->cursor = 0; //qInit
 	Du->nAlphabet = n_alphabet;
 	Du->mapAlphabet = alphabet;
 	Du->sizeAllocate = sz+1;
@@ -90,6 +90,9 @@ automate_det* automate_localisation(const char* mot)
 		print_error("Unable to allocate memory for final states");
 
 	Du->qFinals[0] = sz;
+
+	//Correspondance
+	Du->correspondance = NULL;
 
 	//Transition
 	Du->matTransition = init_transition(sz+1, n_alphabet);
@@ -165,9 +168,9 @@ automate_det* build_trie(char** list, const int n_elem, const int sz_all_words)
 		print_error("Unable to allocate memory for the trie");
 
 	M->qInit = 0;
-	M->nbEtats = 1;
-	M->nbEtatsFinals = 0;
-	M->curseur = 0;
+	M->nStates = 1;
+	M->nFinalStates = 0;
+	M->cursor = 0;
 	M->nAlphabet = n_alphabet;
 	M->mapAlphabet = alphabet;
 	M->sizeAllocate = sz_all_words+1;
@@ -177,12 +180,26 @@ automate_det* build_trie(char** list, const int n_elem, const int sz_all_words)
 	if(M->qFinals == NULL)
 		print_error("Unable to allocate memory for final states");
 
+	//Correspondance
+	M->correspondance = (char**)malloc(sizeof(char*) * (sz_all_words+1));
+	if(M->correspondance == NULL)
+		print_error("Unable to allocate memory for correspondance");
+
+	int i;
+	for(i = 0; i < sz_all_words+1; ++i) {
+		M->correspondance[i] = (char*)malloc(sizeof(char) * 128);
+		if(M->correspondance[i] == NULL)
+			print_error("Unable to allocate memory for correspondance");
+
+		memset(M->correspondance[i], 0, 128);
+	}
+
 	//Init matTransition
 	//au pire des cas nEtats = |Prefix(X)|
 	M->matTransition = init_transition((sz_all_words+1), n_alphabet);
 
 	//Debut de l'algo !
-	int i, j;
+	int j;
 	int max = 1;
 	int etat = 0;
 	int sz_word = 0;
@@ -197,14 +214,15 @@ automate_det* build_trie(char** list, const int n_elem, const int sz_all_words)
 			cur_letter = map_letter(list[i][j], M);
 
 			if(M->matTransition[etat][cur_letter] == -1) {
-				M->nbEtats += 1;
+				M->nStates += 1;
 				M->matTransition[etat][cur_letter] = max;
 				max = max +1;
 			}
 			etat = M->matTransition[etat][cur_letter];
 		}
-		M->qFinals[M->nbEtatsFinals] = etat;
-		M->nbEtatsFinals += 1;
+		M->qFinals[M->nFinalStates] = etat;
+		M->nFinalStates += 1;
+		strcpy(M->correspondance[etat], list[i]);
 	}
 
 	return M;
@@ -215,8 +233,8 @@ automate_det* aho_corasick(char** list, const int n_elem, const int sz_all_words
 	automate_det* Dx = build_trie(list, n_elem, sz_all_words);
 
 	file_int F = init_file();
-	int failure[Dx->nbEtats];
-	memset(failure, 0, sizeof(int)*Dx->nbEtats);
+	int failure[Dx->nStates];
+	memset(failure, 0, sizeof(int)*Dx->nStates);
 
 	int i, j;
 	int n_alphabet = Dx->nAlphabet;
@@ -236,9 +254,10 @@ automate_det* aho_corasick(char** list, const int n_elem, const int sz_all_words
 	while(!est_vide(&F))
 	{
 		tmp = defiler(&F);
-		if(etat_est_final(Dx, failure[tmp])) {
-			Dx->qFinals[Dx->nbEtatsFinals] = tmp;
-			Dx->nbEtatsFinals += 1;
+		if(state_is_final(Dx, failure[tmp])) {
+			Dx->qFinals[Dx->nFinalStates] = tmp;
+			Dx->nFinalStates += 1;
+			strcpy(Dx->correspondance[tmp], list[failure[tmp]]);
 		}
 
 		for(i = 0; i < n_alphabet; ++i)

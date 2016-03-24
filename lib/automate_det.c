@@ -28,8 +28,14 @@ int** init_transition(const int nEtats, const int nAlphabet)
 void free_automate_det(automate_det* M)
 {
 	int i;
-	for(i = 0; i < M->sizeAllocate; ++i)
+	for(i = 0; i < M->sizeAllocate; ++i) {
 		free(M->matTransition[i]);
+	}
+
+	if(M->correspondance != NULL) {
+		for(i = 0; i < M->sizeAllocate; ++i)
+		free(M->correspondance[i]);
+	}
 	free(M->matTransition);
 	free(M->qFinals);
 	free(M->mapAlphabet);
@@ -37,7 +43,7 @@ void free_automate_det(automate_det* M)
 }
 
 // Affichage
-void afficher_matTransition(automate_det* M)
+void print_automata(automate_det* M)
 {
 	int i, j;
 	int pad = M->nAlphabet;
@@ -71,25 +77,25 @@ void afficher_matTransition(automate_det* M)
 	printf("%s\n", buffer);
 }
 
-int est_final(const automate_det* M)
+int is_final(const automate_det* M)
 {
 	int i;
-	for(i = 0; i < M->nbEtatsFinals; ++i) {
-		if(M->curseur == M->qFinals[i])
+	for(i = 0; i < M->nFinalStates; ++i) {
+		if(M->cursor == M->qFinals[i])
 			return 1;
 	}
 	return 0;
 }
 
-int etat_est_final(const automate_det* M, const int etat)
+int state_is_final(const automate_det* M, const int state)
 {
 	int i;
-	for(i = 0; i < M->nbEtatsFinals; ++i)
+	for(i = 0; i < M->nFinalStates; ++i)
 	{
-		if(etat == M->qFinals[i]) {
+		if(state == M->qFinals[i])
 			return 1;
-		}
 	}
+
 	return 0;
 }
 
@@ -97,9 +103,9 @@ void read_letter(automate_det* M, const char c)
 {
 	int x = M->mapAlphabet[(int)c];
 	if(x == -1)
-		M->curseur = 0;
+		M->cursor = 0;
 	else
-		M->curseur = M->matTransition[M->curseur][x];
+		M->cursor = M->matTransition[M->cursor][x];
 }
 
 inline int map_letter(const char c, automate_det* M) {

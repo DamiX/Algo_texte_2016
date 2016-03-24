@@ -7,16 +7,12 @@
 #include <sys/types.h>
 #include "lib/algo.h"
 
-#define true 1
-#define false 0
-#define _DEBUG
-
-typedef int bool;
-
 // CONST VARIABLE
 const int buffer_size = 1024;
 
-inline void print_usage(const char*);
+inline void print_usage(const char* appName) {
+	printf("Usage: %s fichier repertoire\n", appName);
+}
 
 int main(int argc, char** argv)
 {
@@ -84,9 +80,12 @@ int main(int argc, char** argv)
 			printf("=================\nFichier: %s\n=================\n", cur_file->d_name);
 			while((c = tolower(fgetc(txt))) != EOF)
 			{
+				if(!is_valid_caractere((int)c))
+					continue;
+
 				read_letter(Dx, c);
 				if(is_final(Dx)) {
-					printf("Occurence trouvée\n");
+					printf("Occurence trouvée: %s\n", Dx->correspondance[Dx->cursor]);
 				}
 			}
 
@@ -105,8 +104,4 @@ int main(int argc, char** argv)
 		free(list_words[i]);
 
 	return 0;
-}
-
-inline void print_usage(const char* appName) {
-	printf("Usage: %s fichier repertoire\n", appName);
 }

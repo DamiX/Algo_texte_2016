@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include "lib/algo.h"
 
-const int sz_buffer = 6000;
+const int sz_buffer = 2048;
 
 inline void print_usage(const char* appName) {
 	printf("Usage: %s [options] motif fichier\n\nOptions:\n\t-n\tAffiche le nombre d'occurrence du motif\n\t-l\tAffiche le numéro de ligne des occurrences\n\t-i\tInsensible à la case\n", appName);
@@ -116,7 +116,7 @@ int main(int argc, char** argv)
 		}
 
 		read_letter(sgrepAutomata, c);
-		if(est_final(sgrepAutomata)) {
+		if(is_final(sgrepAutomata)) {
 			// Fancy color !
 			buffer[i-sz_motif] = '\0';
 			strcat(buffer, ansi_red_color);

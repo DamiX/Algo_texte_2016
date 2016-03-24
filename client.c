@@ -7,8 +7,17 @@
 #include <errno.h>
 #include <fcntl.h>
 
+inline void print_usage(const char*);
+
 int main(int argc, char** argv)
 {
+	if(argc < 2) {
+		print_usage(argv[0]);
+		exit(1);
+	}
+
+	const char* exec = argv[1];
+
 	int status = 0;
 
 	struct addrinfo *res;
@@ -36,14 +45,13 @@ int main(int argc, char** argv)
 
 	//Read the file by chunks and send it though socket
 
-	const char* file = "myTest";
 	const int bf_size = 1024; //1Ko
 	char buffer[bf_size];
 
 	int fdesc;
-	if((fdesc = open(file, O_RDONLY)) == -1) {
+	if((fdesc = open(exec, O_RDONLY)) == -1) {
 		fprintf(stderr, "%s: Impossible d'ouvrir l'executable %s. Error : %d", __FILE__,
-		file, errno);
+		exec, errno);
 		exit(1);
 	}
 
@@ -56,4 +64,8 @@ int main(int argc, char** argv)
 	close(s);
 
 	return 0;
+}
+
+inline void print_usage(const char* appName) {
+	printf("Usage: %s executable\n", appName);
 }

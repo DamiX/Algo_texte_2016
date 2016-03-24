@@ -72,7 +72,7 @@ int main(int argc, char** argv)
 			for(k = 1<<7; k > 0; k=k>>1) {
 				read_letter(Dx, (buffer[i] & k ? '1' : '0'));
 				if(is_final(Dx)) {
-					printf("Bits frauduleux trouvée\n");
+					printf("Occurence trouvée: %s\n", Dx->correspondance[Dx->cursor]);
 				}
 			}
 		}
