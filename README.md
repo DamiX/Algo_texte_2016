@@ -1,33 +1,27 @@
 De grep à l'antivirus
 =====================
-Ce projet s'appuie sur les connaissances du cours d'Algorithme du texte lors de ma formation en Master 1 Informatique à l'[Université Pars 13](https://www.univ-paris13.fr/).
+Ce projet a pour but de développer des applications permettant de mettre en oeuvre les connaissances acquises du cours d'Algorithme du texte lors de ma formation en Master 1 Informatique à l'[Université Pars 13](https://www.univ-paris13.fr/).
 
 TO DO
 -----
  * Réécrite complètement `automate_det` et `algo`.
  * Améliorer l'affichage de acgrep et acbgrep.
 
-Décision
---------
-Aucune contrainte n'a été définie sur le type d'encodage dont les applications serai capable de gérer. Aujourd'hui le type d'encodage est vaste : UTF-8, Wide characteres, Multibyte ... Chacun ayant leurs avantages et inconénient.
-
-Le choix s'est aisément porté vers le codage [ASCII](https://fr.wikipedia.org/wiki/American_Standard_Code_for_Information_Interchange) principalement pour sa simplicité (Il définit 128 caractères pouvant être codés sur 1 octet. À priori le type atomique char suffira). 
-
 SGrep
 -----
-**Simple Grep** permets de la détection d'un motif passé en argument dans un fichier texte en utilisant un automate de localisation. C'est en quelque sorte une petite réplique de la commande [grep](http://www.linux-france.org/article/man-fr/man1/grep-1.html).
+**Simple Grep** permets de la détection d'un motif dans un fichier texte en utilisant un automate de localisation. C'est en quelque sorte une réplique de la commande [grep](http://www.linux-france.org/article/man-fr/man1/grep-1.html).
 
 ACGrep
 ------
-**ACGrep** permets de détecter un ensemble de mots à partir d'un fichier passé en argument dans une liste de fichier.
+**ACGrep** permets de détecter un ensemble de mots dans un repertoire à l'aide de l'automate d'Aho-Corasick.
 
 ACBGrep
 -------
-**Binary Grep** fait exactement la même chose que le programme précédement, cependant avec des fichiers binaires.
+**Binary Grep** fait quasiment la même chose que le programme précédement, cependant avec des fichiers binaires.
 
 Bonus
 -----
-`client.c` et `server.h` sont des programmes respectivement client et serveur. Il simule brièvement le fonctionnement d'un Firewall.
+`client.c` et `server.h` sont des programmes respectivement client et serveur. Ils simulent brièvement le fonctionnement d'un Firewall. Le client envoie au serveur un fichier binaire quelconque, tandis que le serveur reçoit le contenu de ce dit fichier à travers un "flux" de donnée et vérifie s'il n'y a pas de motif suspect apparaissant.
 
 Essayer !
 ---------
@@ -36,6 +30,21 @@ git clone https://github.com/DamiX/Algo_texte_2016.git
 cd Algo_texte_2016
 make
 ````
+
+Limitation
+----------
+* Uniquement fonctionnel sur système Unix
+* Supporte uniquement l'ASCII (7 bits)
+
+Décision
+--------
+Le langage de programmation choisi est le C, tout simplement parce qu'au moment de la réalisation de ce projet, mes connaissances en C++ n'était pas assez riche.
+L'histoire du C++ peut laisser prétendre à une simple évolution du C, du C orienté objet avec quelques fonctionnalités en plus. C'est vrai qu'il peut être utilisé de la sorte, cependant ce n'en est pas une utilisation optimale (selon Bjarne Stroustrup).
+Pour plus d'informations, je vous conseille le merveilleux livre de l'un de ses créateurs : [The C++ Programming Language Forth Edition](http://www.amazon.com/The-Programming-Language-4th-Edition/dp/0321563840).
+
+Parlons encodage ! Aucune contrainte n'a été définie sur le type d'encodage dont les applications serai capable d'interpreter. Pendant longtemps il y a eu beaucoup de divergence concernant l'encodage des caractères. Aujourd'hui il existe toujours des développeurs pensant qu'un caractère ce code sur 1 octet ou que l'Unicode se code sur 16 bits.
+FAUX ! comme dirait Norman. Je ne vous ferai pas de cours complet à ce sujet, mais voici [un article intéressant](http://www.joelonsoftware.com/articles/Unicode.html).
+Dans le cadre de ce devoir, le choix à été fait en faveur de l'ASCII... Pour des raisons de simplicité.
 
 Credits - Contributeurs
 -----------------------
