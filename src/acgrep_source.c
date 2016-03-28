@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include <dirent.h>
 #include <sys/types.h>
-#include "lib/algo.h"
+#include "../lib/algo.h"
 
 // CONST VARIABLE
 const int buffer_size = 1024;

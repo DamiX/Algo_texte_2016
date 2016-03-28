@@ -3,7 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <unistd.h>
-#include "lib/algo.h"
+#include "../lib/algo.h"
 
 const int sz_buffer = 2048;
 

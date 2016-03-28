@@ -7,7 +7,7 @@
 #include <sys/types.h>
 #include <errno.h>
 #include <fcntl.h>
-#include "lib/algo.h"
+#include "../lib/algo.h"
 
 // CONST VARIABLE
 const int buf_size = 1024; //1Ko

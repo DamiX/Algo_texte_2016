@@ -5,7 +5,7 @@
 #include <netdb.h>
 #include <string.h>
 #include <errno.h>
-#include "lib/algo.h"
+#include "../lib/algo.h"
 
 inline void print_usage(const char*);
 
@@ -104,7 +104,7 @@ int main(int argc, char** argv)
 			//Converti les octets en bits avant de lire dans l'automate
 			for(j = 1<<7; j > 0; j=j>>1) {
 				read_letter(Dx, (buffer[i] & j ? '1' : '0'));
-				if(est_final(Dx)) {
+				if(is_final(Dx)) {
 					//Envoyer stop
 					close(soc_client);
 					printf("Bits frauduleux trouvée\n");
