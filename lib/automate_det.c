@@ -43,10 +43,11 @@ void free_automate_det(automate_det* M)
 }
 
 // Affichage
+// TODO: PRETTY PRINTING!!
 void print_automata(automate_det* M)
 {
 	int i, j;
-	int pad = M->nAlphabet;
+	/*int pad = M->nAlphabet;
 
 	char buffer[1024];
 	memset(buffer, 0, 1024);
@@ -56,10 +57,10 @@ void print_automata(automate_det* M)
 		strcat(buffer, "=====");
 	strcat(buffer, "+\n+\t\t||\t");
 
-	/*for(i = 0; i < M->nAlphabet; ++i) {
+	for(i = 0; i < M->nAlphabet; ++i) {
 		strcat(buffer, M-);
 		strcat(buffer, '\t');
-	}*/
+	}
 
 	strcat(buffer, "\n+");
 	for(i = 0; i < pad; ++i)
@@ -67,14 +68,22 @@ void print_automata(automate_det* M)
 	strcat(buffer, "+\n||\t||");
 
 
-	/*for(i = 0; i < M->nbEtats; ++i)
+	for(i = 0; i < M->nbEtats; ++i)
 	{
 		strcat(buffer, "||
 		for(j = 0; j < M->nAlphabet; ++j)
 		{
 	*/		
 	
-	printf("%s\n", buffer);
+	for(i = 0; i < M->nStates; ++i)
+	{
+		printf("Etat %d:\t", i);
+		for(j = 0; j < M->nAlphabet; ++j)
+		{
+			printf("%d\t", M->matTransition[i][j]);
+		}
+		printf("\n");
+	}
 }
 
 int is_final(const automate_det* M)
