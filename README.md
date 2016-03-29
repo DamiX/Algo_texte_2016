@@ -24,6 +24,13 @@ Essayer !
 git clone https://github.com/DamiX/Algo_texte_2016.git
 cd Algo_texte_2016
 make
+./sgrep -n -l horloge txt/tdm.txt
+./sgrep "Quelques jours" txt/sodome_et_gomorrhe_MARCEL_PROUST.txt
+./acgrep txt/liste_mots.txt src/
+./acbgrep txt/bin_bdd.txt /bin/
+./acbgrep txt/bin_bdd.txt .
+./server txt/bin_bdd.txt
+./client /bin/ls
 ````
 
 Limitation
