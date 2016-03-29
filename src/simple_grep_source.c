@@ -58,7 +58,7 @@ int main(int argc, char** argv)
 
 			case '?':
 				print_usage(argv[0]);
-				return 1;
+				return 0;
 			break;
 
 			default:
