@@ -35,7 +35,7 @@ void enfiler(const int x, file_int* F)
 			exit(1);
 		}
 
-		memcpy((void*)new_tab, (void*)F->tab, sizeof(F->tab)); //Notworking WHY ?!!
+		memcpy((void*)new_tab, (void*)F->tab, sizeof(int)*F->taille);
 		free(F->tab);
 		F->tab = new_tab;
 		F->taille = new_size;
