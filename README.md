@@ -2,11 +2,6 @@ De grep à l'antivirus
 =====================
 Ce projet a pour but de développer des applications permettant de mettre en oeuvre les connaissances acquises du cours d'Algorithme du texte lors de ma formation en Master 1 Informatique à l'[Université Pars 13](https://www.univ-paris13.fr/).
 
-TO DO
------
- * Réécrite complètement `automate_det` et `algo`.
- * Améliorer l'affichage de acgrep et acbgrep.
-
 SGrep
 -----
 **Simple Grep** permets de la détection d'un motif dans un fichier texte en utilisant un automate de localisation. C'est en quelque sorte une réplique de la commande [grep](http://www.linux-france.org/article/man-fr/man1/grep-1.html).
