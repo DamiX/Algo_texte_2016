@@ -272,5 +272,7 @@ automate_det* aho_corasick(char** list, const int n_elem, const int sz_all_words
 		}
 	}
 
+	//Libère la mémoire
+	free_file(&F);
 	return Dx;
 }
