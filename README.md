@@ -18,7 +18,7 @@ Bonus
 -----
 `client.c` et `server.h` sont des programmes respectivement client et serveur. Ils simulent brièvement le fonctionnement d'un Firewall. Le client envoie au serveur un fichier binaire quelconque, tandis que le serveur reçoit le contenu de ce dit fichier à travers un "flux" de donnée et vérifie s'il n'y a pas de motif suspect apparaissant.
 
-Essayer !
+Essayez !
 ---------
 ````bash
 git clone https://github.com/DamiX/Algo_texte_2016.git
