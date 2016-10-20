@@ -40,11 +40,11 @@ Limitation
 
 Décision
 --------
-Le langage de programmation choisi est le C, tout simplement parce qu'au moment de la réalisation de ce projet, mes connaissances en C++ n'était pas assez riche.
+Le langage de programmation choisi est le C, tout simplement parce qu'au moment de la réalisation de ce projet, mes connaissances en C++ n'étaient pas assez riches.
 L'histoire du C++ peut laisser prétendre à une simple évolution du C, du C orienté objet avec quelques fonctionnalités en plus. C'est vrai qu'il peut être utilisé de la sorte, cependant ce n'en est pas une utilisation optimale (selon Bjarne Stroustrup).
 Pour plus d'informations, je vous conseille le merveilleux livre de l'un de ses créateurs : [The C++ Programming Language Forth Edition](http://www.amazon.com/The-Programming-Language-4th-Edition/dp/0321563840).
 
-Parlons encodage ! Aucune contrainte n'a été définie sur le type d'encodage dont les applications serai capable d'interpreter. Pendant longtemps il y a eu beaucoup de divergence concernant l'encodage des caractères. Aujourd'hui il existe toujours des développeurs pensant qu'un caractère ce code sur 1 octet ou que l'Unicode se code sur 16 bits.
+Parlons encodage ! Aucune contrainte n'a été définie sur le type d'encodage dont les applications seraient capable d'interpréter. Pendant longtemps il y a eu beaucoup de divergence concernant l'encodage des caractères. Aujourd'hui, il existe toujours des développeurs pensant qu'un caractère ce code sur 1 octet ou que l'Unicode se code sur 16 bits.
 FAUX ! comme dirait Norman. Je ne vous ferai pas de cours complet à ce sujet, mais voici [un article intéressant](http://www.joelonsoftware.com/articles/Unicode.html).
 Dans le cadre de ce devoir, le choix à été fait en faveur de l'ASCII... Pour des raisons de simplicité.
 
