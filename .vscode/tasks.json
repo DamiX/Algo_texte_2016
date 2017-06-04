@@ -1,0 +1,27 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "0.1.0",
+    "command": "make",
+    "isShellCommand": true,
+    "showOutput": "always",
+    "suppressTaskName": true,
+    "tasks": [
+        {
+            "taskName": "Build c++11 version",
+            "isBuildCommand": true,
+            "args": [
+                "-C",
+                "c++11"
+            ]
+        },
+        {
+            "taskName": "Clean c++11 version",
+            "args": [
+                "-C",
+                "c++11",
+                "mrproper"
+            ]
+        }
+    ]
+}
