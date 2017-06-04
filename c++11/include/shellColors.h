@@ -22,12 +22,12 @@
 namespace shell {
     // Defs
     enum class Style : char {
-        Bold        =       0x00,
-        Dim         =       0x01,
-        Underline   =       0x02,
-        Blink       =       0x04,
-        Negative    =       0x06,
-        Italic      =       0x08
+        None        =       0,
+        Bold        =       1,
+        Underline   =       4,
+        Blink       =       5,
+        Negative    =       7,
+        Hide        =       8
     };
 
     enum class Color : char {
