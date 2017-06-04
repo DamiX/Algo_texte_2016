@@ -22,6 +22,10 @@
                 "c++11",
                 "mrproper"
             ]
+        },
+        {
+            "taskName": "Launch c++11 version",
+            "command": "c++11/bin/sgrep"
         }
     ]
 }
