@@ -1,5 +1,2 @@
-sgrep
-acgrep
-acbgrep
-client
-server
+c++11/bin/*
+c98/bin/
