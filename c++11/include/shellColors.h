@@ -1,45 +1,52 @@
-#pragma once
-
-#include <string>
-#include <sstream>
-#include <unordered_map> //TODO : Replace w/ sorted array later
-
 /**
  * @brief Provide color for shell
  *
- * This namespace tends to provide color
- * for shell terminal that support AINSI
- * color codes (aka ANSI escape code).
+ * This namespace provide color for shell terminal that support AINSI
+ * escape code.
  * source : https://en.wikipedia.org/wiki/ANSI_escape_code
- *
- * Author : Damien Mehala
- * Mail : damien.mehala@gmail.com
  * ------------
  * Licence : GNU GPL3
  * Everyone is permitted to copy and distribute verbatim copies
  * of this license document, but changing it is not allowed.
  */
+#pragma once
+
+#include <string>
+#include <sstream>
+
 namespace shell {
-    // Defs
-    enum class Style : char {
-        None        =       0,
-        Bold        =       1,
-        Underline   =       4,
-        Blink       =       5,
-        Negative    =       7,
-        Hide        =       8
+    // Style
+    constexpr char none         = 0;
+    constexpr char bold         = 1;
+    constexpr char negative     = 2;
+    constexpr char blink        = 3;
+    constexpr char underline    = 4;
+    constexpr char hide         = 5;
+
+    // Color
+    constexpr char black    = 30;
+    constexpr char red      = 31;
+    constexpr char green    = 32;
+    constexpr char yellow   = 33;
+    constexpr char blue     = 34;
+    constexpr char magenta  = 35;
+    constexpr char cyan     = 36;
+    constexpr char white    = 37;
+
+    struct Style {
+        char color;
+        char style;
+
+        Style(const char in_color, const char in_style = none)
+        : color(in_color), style(in_style)
+        {};
     };
 
-    enum class Color : char {
-        Black       =       30,
-        Red         =       31,
-        Green       =       32,
-        Yellow      =       33,
-        Blue        =       34,
-        Magenta     =       35,
-        Cyan        =       36,
-        White       =       37
-    };
-    
-    std::stringstream generate_ascii(Style s, Color c);
+    const Style Red(red);
+    const Style Default(black);
+
+    std::ostream& operator<<(std::ostream& os, const Style s) {
+        os << "\x1b[" << std::to_string(s.style) << ";" << std::to_string(s.color) << "m";
+        return os;
+    }
 }

@@ -18,14 +18,14 @@ setup:
 	cp -R $(HEADER_DIR) .build/
 
 # Link executable
-sgrep: shellColors.o
+sgrep:
 	cd .build && \
 	$(CC) $(CFLAGS) $^ sgrep.cpp -o $@ && \
-	mv $@ $(MAKE_DIR)/bin
+	mv $@ "$(MAKE_DIR)/bin/"
 
 # Compile cpp
-shellColors.o:
-	$(CC) $(CFLAGS) -c .build/shellColors.cpp -o .build/$@ 
+# shellColors.o:
+# 	$(CC) $(CFLAGS) -c .build/shellColors.cpp -o .build/$@
 
 clean:
 	rm -rf .build
