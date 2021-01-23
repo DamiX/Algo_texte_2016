@@ -7,7 +7,9 @@
 #include <errno.h>
 #include <fcntl.h>
 
-inline void print_usage(const char*);
+static inline void print_usage(const char* appName) {
+	printf("Usage: %s executable\n", appName);
+}
 
 int main(int argc, char** argv)
 {
@@ -64,8 +66,4 @@ int main(int argc, char** argv)
 	close(s);
 
 	return 0;
-}
-
-inline void print_usage(const char* appName) {
-	printf("Usage: %s executable\n", appName);
 }

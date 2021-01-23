@@ -1,35 +1,48 @@
-CFLAGS = -Wall
-CC = gcc
-EXEC = sgrep acgrep acbgrep server client
+# Directories
+SRC_DIR		:= src
+BUILD_DIR	:= build
+OBJ_DIR		:= $(BUILD_DIR)/obj
+BINARY_DIR	:= $(BUILD_DIR)/bin
 
-all: $(EXEC) clean
+# SRC := $(wildcard $(SRC_DIR)/*.c)
+SRC := $(filter-out src/simple_grep.c src/acgrep.c src/client.c src/server.c, $(wildcard $(SRC_DIR)/*.c))
+OBJ	:= $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC))
 
-sgrep: automate.o file.o algo.o src/simple_grep_source.c
-	$(CC) $^ -o $@
+# Compiler & linker args
+CC			:= gcc
+CPPFLAGS	:= -Iinclude -MMD -MP
+CFLAGS		:= -Wall -g
+LDFLAGS 	:=
+LDLIBS		:=
 
-acgrep: automate.o file.o algo.o src/acgrep_source.c
-	$(CC) $^ -o $@
+EXEC := sgrep acgrep server client
 
-acbgrep: automate.o file.o algo.o src/acbgrep_source.c
-	$(CC) $^ -o $@
+.PHONY: all
 
-server: automate.o file.o algo.o src/server.c
-	$(CC) $^ -o $@
+all: setup $(EXEC)
 
-client: src/client.c
-	$(CC) $^ -o $@
+rebuild: clean all
 
-algo.o: lib/automate_det.h lib/file.h lib/algo.c
-	$(CC) -c lib/algo.c $(CFLAGS) -o algo.o
+setup:
+	mkdir -p $(BINARY_DIR)
+	mkdir -p $(OBJ_DIR)
 
-automate.o: lib/automate_det.c
-	$(CC) -c lib/automate_det.c $(CFLAGS) -o automate.o
+sgrep: $(OBJ) $(OBJ_DIR)/simple_grep.o
+	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $(BINARY_DIR)/$@
 
-file.o: lib/file.c
-	$(CC) -c lib/file.c $(CFLAGS) -o file.o
+acgrep: $(OBJ) $(OBJ_DIR)/acgrep.o
+	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $(BINARY_DIR)/$@
+
+server: $(OBJ) $(OBJ_DIR)/server.o
+	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $(BINARY_DIR)/$@
+
+client: $(OBJ) $(OBJ_DIR)/server.o
+	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $(BINARY_DIR)/$@
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -rf *.o
+	rm -rf $(BUILD_DIR)
 
-mrproper: clean
-	rm -rf $(EXEC)
+-include $(OBJ:.o=.d)

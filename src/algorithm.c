@@ -1,80 +1,48 @@
-#include "algo.h"
+#include "include/algorithm.h"
+#include "include/queue.h"
+#include "include/helper.h"
 
-const int ASCII = 128;
-
-inline void print_error(const char* err) {
-	fprintf(stderr, "%s: %s\n%s\n", __FILE__, err, strerror(errno));
-	exit(1);
-}
-
-//Charset
-inline bool is_valid_caractere(const int c) {
-	return (c >= 0 && c <= ASCII) ? true : false;
-}
-
-inline void strtolower(char* str) {
-	while((*str = tolower(*str)) != 0){++str;}
-}
-
-char* normalize_string(const char* myString)
-{
-	int i = 0;
-	int sz = (int)strlen(myString);
-	
-	char* buffer = (char*)malloc(sizeof(char) * sz+1);
-	if(buffer == NULL)
-		print_error("Unable to allocate memory for normalize_string");
-
-	while(*myString != 0)
-	{
-		if(is_valid_caractere((int)*myString))
-			buffer[i++] = *myString++;
-	}
-	buffer[i] = '\0';
-
-	return buffer; //!! DO NOT FORGET TO FREE !!
-}
+static const char SENTINEL_VALUE = -1;
 
 int* table_bord(const char* mot)
 {
-	size_t sz = strlen(mot)+1;
+	const size_t sz = strlen(mot)+1;
 
 	int* bord = (int*)malloc(sizeof(int) * sz);
-	if(bord == NULL)
-		print_error("Unable to allocate memory for table_bord");
+	if(bord != NULL) {
+		memset(bord, 0, sizeof(int)*sz);
 
-	memset(bord, 0, sizeof(int)*sz);
+		bord[0] = -1;
 
-	bord[0] = -1;
+		int i = 0, j = 0;
+		for(i = 2; i < sz; ++i)
+		{
+			/* j peut être égal à -1, il est préférable d'utiliser la propriété de court
+			circuit de l'opérateur && à bon escient */
+			while(j >= 0 && mot[j] != mot[i-1]) //j can be -1
+				j = bord[j];
 
-	int i = 0, j = 0;
-	for(i = 2; i < sz; ++i)
-	{
-		/* j peut être égal à -1, il est préférable d'utiliser la propriété de court
-		   circuit de l'opérateur && à bon escient */
-		while(j >= 0 && mot[j] != mot[i-1]) //j can be -1 
-			j = bord[j];
-
-		bord[i] = ++j;
+			bord[i] = ++j;
+		}
 	}
 
 	return bord;
 }
 
-automate_det* automate_localisation(const char* mot)
+deterministic_automata* automate_localisation(const char* mot)
 {
 	int sz = (int)strlen(mot);
 	int* bord = table_bord(mot);
 
-	//Determine l'alphabet du motif
+	//Determine l'alphabet du pattern
 	int* alphabet = NULL;
 	int n_alphabet = 0;
 	get_alphabet(&mot, 1, &alphabet, &n_alphabet);
 
 	//Creation de l'automate de localisation
-	automate_det* Du = (automate_det*)malloc(sizeof(automate_det));
+	deterministic_automata* Du = (deterministic_automata*)malloc(sizeof(deterministic_automata));
 	if(Du == NULL)
-		print_error("Unable to allocate memory for the automata");
+		return NULL;
 
 	Du->qInit = 0;
 	Du->nStates = sz+1;
@@ -87,7 +55,7 @@ automate_det* automate_localisation(const char* mot)
 	// Etat final
 	Du->qFinals = (int*)malloc(sizeof(int));
 	if(Du->qFinals == NULL)
-		print_error("Unable to allocate memory for final states");
+		return NULL;
 
 	Du->qFinals[0] = sz;
 
@@ -130,11 +98,12 @@ void get_alphabet(const char** liste_mot, const int nb_mot, int** alphabet, int*
 {
 	*n_alphabet = 0;
 
-	*alphabet = (int*)malloc(sizeof(int) * ASCII);
+	const int alphabet_size = sizeof(int) * max_ascii_char;
+	*alphabet = (int*)malloc(alphabet_size);
 	if(*alphabet == NULL)
-		print_error("Unable to allocate memory the alphabet");
+		return;
 
-	memset(*alphabet, -1, sizeof(int)*ASCII); //-1 valeur discriminante
+	memset(*alphabet, SENTINEL_VALUE, alphabet_size);
 
 	int i, j;
 	int sz;
@@ -155,7 +124,7 @@ void get_alphabet(const char** liste_mot, const int nb_mot, int** alphabet, int*
 	}
 }
 
-automate_det* build_trie(char** list, const int n_elem, const int sz_all_words)
+deterministic_automata* build_trie(char** list, const int n_elem, const int sz_all_words)
 {
 	//Get the alphabet my friend !
 	int* alphabet = NULL;
@@ -163,9 +132,9 @@ automate_det* build_trie(char** list, const int n_elem, const int sz_all_words)
 	get_alphabet((const char**)list, n_elem, &alphabet, &n_alphabet);
 
 	// Créer l'automate
-	automate_det* M = (automate_det*)malloc(sizeof(automate_det));
+	deterministic_automata* M = (deterministic_automata*)malloc(sizeof(deterministic_automata));
 	if(M == NULL)
-		print_error("Unable to allocate memory for the trie");
+		return NULL;
 
 	M->qInit = 0;
 	M->nStates = 1;
@@ -178,7 +147,7 @@ automate_det* build_trie(char** list, const int n_elem, const int sz_all_words)
 	//Init qFinals
 	M->qFinals = (int*)malloc(sizeof(int) * (sz_all_words+1));
 	if(M->qFinals == NULL)
-		print_error("Unable to allocate memory for final states");
+		return NULL;
 
 	//Correspondance
 	M->correspondance = (char**)malloc(sizeof(char*) * (sz_all_words+1));
@@ -228,11 +197,11 @@ automate_det* build_trie(char** list, const int n_elem, const int sz_all_words)
 	return M;
 }
 
-automate_det* aho_corasick(char** list, const int n_elem, const int sz_all_words)
+deterministic_automata* aho_corasick(char** list, const int n_elem, const int sz_all_words)
 {
-	automate_det* Dx = build_trie(list, n_elem, sz_all_words);
+	deterministic_automata* Dx = build_trie(list, n_elem, sz_all_words);
 
-	file_int F = init_file();
+	int_queue Q = init_queue();
 	int failure[Dx->nStates];
 	memset(failure, 0, sizeof(int)*Dx->nStates);
 
@@ -246,15 +215,15 @@ automate_det* aho_corasick(char** list, const int n_elem, const int sz_all_words
 			Dx->matTransition[0][i] = 0;
 		} else {
 			failure[j] = 0;
-			enfiler(j, &F);
+			push_queue(j, &Q);
 		}
 	}
 
 	int tmp;
-	while(!est_vide(&F))
+	while(!is_queue_empty(&Q))
 	{
-		tmp = defiler(&F);
-		if(state_is_final(Dx, failure[tmp])) {
+		tmp = pop_queue(&Q);
+		if(is_automata_state_final(Dx, failure[tmp])) {
 			Dx->qFinals[Dx->nFinalStates] = tmp;
 			Dx->nFinalStates += 1;
 			strcpy(Dx->correspondance[tmp], list[failure[tmp]]);
@@ -267,12 +236,11 @@ automate_det* aho_corasick(char** list, const int n_elem, const int sz_all_words
 				Dx->matTransition[tmp][i] = Dx->matTransition[failure[tmp]][i];
 			} else {
 				failure[j] = Dx->matTransition[failure[tmp]][i];
-				enfiler(j, &F);
+				push_queue(j, &Q);
 			}
 		}
 	}
 
-	//Libère la mémoire
-	free_file(&F);
+	free_queue(&Q);
 	return Dx;
 }

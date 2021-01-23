@@ -1,4 +1,4 @@
-#include "automate_det.h"
+#include "include/automata.h"
 
 int** init_transition(const int nEtats, const int nAlphabet)
 {
@@ -25,7 +25,7 @@ int** init_transition(const int nEtats, const int nAlphabet)
 	return matrice; //!! NE PAS OUBLIER DE LIBERER LA MEMOIRE !!
 }
 
-void free_automate_det(automate_det* M)
+void free_deterministic_automata(deterministic_automata* M)
 {
 	int i;
 	for(i = 0; i < M->sizeAllocate; ++i) {
@@ -44,37 +44,10 @@ void free_automate_det(automate_det* M)
 
 // Affichage
 // TODO: PRETTY PRINTING!!
-void print_automata(automate_det* M)
+void print_automata(deterministic_automata* M)
 {
 	int i, j;
-	/*int pad = M->nAlphabet;
 
-	char buffer[1024];
-	memset(buffer, 0, 1024);
-
-	strcat(buffer, "+");
-	for(i = 0; i < pad; ++i)
-		strcat(buffer, "=====");
-	strcat(buffer, "+\n+\t\t||\t");
-
-	for(i = 0; i < M->nAlphabet; ++i) {
-		strcat(buffer, M-);
-		strcat(buffer, '\t');
-	}
-
-	strcat(buffer, "\n+");
-	for(i = 0; i < pad; ++i)
-		strcat(buffer, "-----");
-	strcat(buffer, "+\n||\t||");
-
-
-	for(i = 0; i < M->nbEtats; ++i)
-	{
-		strcat(buffer, "||
-		for(j = 0; j < M->nAlphabet; ++j)
-		{
-	*/		
-	
 	for(i = 0; i < M->nStates; ++i)
 	{
 		printf("Etat %d:\t", i);
@@ -86,29 +59,24 @@ void print_automata(automate_det* M)
 	}
 }
 
-int is_final(const automate_det* M)
+bool is_final_automata(const deterministic_automata* M)
 {
-	int i;
-	for(i = 0; i < M->nFinalStates; ++i) {
-		if(M->cursor == M->qFinals[i])
-			return 1;
-	}
-	return 0;
+	return is_automata_state_final(M, M->cursor);
 }
 
-int state_is_final(const automate_det* M, const int state)
+bool is_automata_state_final(const deterministic_automata* M, const int state)
 {
 	int i;
 	for(i = 0; i < M->nFinalStates; ++i)
 	{
 		if(state == M->qFinals[i])
-			return 1;
+			return true;
 	}
 
-	return 0;
+	return false;
 }
 
-void read_letter(automate_det* M, const char c)
+void read_letter(deterministic_automata* M, const char c)
 {
 	int x = M->mapAlphabet[(int)c];
 	if(x == -1)
@@ -117,6 +85,6 @@ void read_letter(automate_det* M, const char c)
 		M->cursor = M->matTransition[M->cursor][x];
 }
 
-inline int map_letter(const char c, automate_det* M) {
+int map_letter(const char c, deterministic_automata* M) {
 	return M->mapAlphabet[(int)c];
 }
